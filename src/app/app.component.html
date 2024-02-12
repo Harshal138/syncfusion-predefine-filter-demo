@@ -1,0 +1,23 @@
+<!--<router-outlet></router-outlet>-->
+
+<div [style.height]="'100%'" [style.width]="'100%'" [style.margin-top]="'100px'">
+  <ejs-grid #syncGrid [id]="'syncfusion-grid'"  (dataStateChange)="dataStateChangeEvent($event)" [enableStickyHeader]="true" [allowKeyboard]="true"
+            [allowExcelExport]="gridConfigOptions.allowExcelExport" [allowFiltering]="gridConfigOptions.allowFiltering" [allowGrouping]="gridConfigOptions.allowGrouping"
+            [allowPaging]="gridConfigOptions.allowPaging" [allowPdfExport]="gridConfigOptions.allowPdfExport" [allowReordering]="gridConfigOptions.allowReordering"
+            [allowResizing]="gridConfigOptions.allowResizing" [allowSorting]="gridConfigOptions.allowSorting" [allowTextWrap]="gridConfigOptions.allowTextWrap"
+            [dataSource]="items" [gridLines]="gridConfigOptions.gridLines" [pageSettings]="gridConfigOptions.pageSettings"
+            [showColumnChooser]="gridConfigOptions.showColumnChooser"
+            [toolbar]="gridConfigOptions.toolbar"
+            [sortSettings]="sortSettings"
+            height="{{500}}" [groupSettings]="groupSettings">
+    <!--[allowSelection]="allowSelection"-->
+    <e-columns>
+        <ng-container *ngFor="let config of gridColumns">
+            <e-column [id]="'checkbox-grid'" [field]="config.field" [headerText]="config.headerText"
+                      *ngIf="config.isVisible"
+                      [allowFiltering]="config.isFiltering" [allowGrouping]="config.isGrouping" [format]="config.format"
+                      [allowSorting]="config.isSorting" [textAlign]="config.textAlign" [type]="config.type"></e-column>
+        </ng-container>
+    </e-columns>
+</ejs-grid>
+</div>
