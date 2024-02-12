@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {GroupSettingsModel, SortSettingsModel} from "@syncfusion/ej2-angular-grids";
+import {DataStateChangeEventArgs, GroupSettingsModel, SortSettingsModel} from "@syncfusion/ej2-angular-grids";
 import {dataSource} from "../dataSource/dataSource";
-import {ApiService} from "../dataSource/apis";
 
 @Component({
   selector: 'app-root',
@@ -59,33 +58,58 @@ export class AppComponent implements OnInit{
   sortSettings :  SortSettingsModel = {};
   reqBody:DataManagerRequest = {};
 
-  constructor(private apiService:ApiService) {}
+  constructor() {}
 
   ngOnInit():void {
     this.reqBody.skip = 0;
     this.reqBody.take = 10;
-    this.apiService.getDataSource(this.reqBody).subscribe({
-      next:(res)=>{
-        console.log(res)
-      },
-      error:(err):void =>{
-        console.log(err)
-      }
-    })
+    // Let Assume this Api call
     setTimeout(():void=>{
-
-      this.items = dataSource.gridResponse;
-      this.groupSettings = {
-        columns:['uniqueTitle']
-      }
-      this.sortSettings = {
-        columns:['uniqueNo']
-      } as SortSettingsModel
-    },2000);
+      this.getDataSource();
+      this.setPredefinedFilter(); // After Response Set Default Group
+    },1000)
   }
 
-  dataStateChangeEvent(event: any):void {
-    console.log(event)
+  getDataSource():void {
+    this.items = dataSource.gridResponse;
+    console.log("Data Assigned to Grid")
+  }
+
+  dataStateChangeEvent(event: DataStateChangeEventArgs):void {
+    if (event.action?.requestType === 'sorting') {
+      console.log('sorting ===> ' ,event.action?.requestType)
+      this.reqBody.sorted = event.sorted;
+      this.getDataSource();
+    } else if(event.action?.requestType === 'paging') {
+      this.getDataSource();
+    }
+    else if(event.action?.requestType === 'grouping' || event.action?.requestType === 'ungrouping') {
+      console.log('grouping ===> ' ,event.action?.requestType)
+      this.reqBody.group = event.group;
+      this.getDataSource();
+    }
+    else if(event.action?.requestType === 'searching') {
+      this.reqBody.search = event.search;
+      this.getDataSource();
+    }else if(event.action?.requestType === 'filtering') {
+      this.reqBody.where = event.where;
+      this.getDataSource();
+    }else if(event.action?.requestType === 'refresh') {
+
+    }
+  }
+
+
+
+  // Here I have Set Predefined Groups and Sort Settings
+  setPredefinedFilter():void
+  {
+    this.groupSettings = {
+      columns:dataSource.syncGridPredefineFilters.group
+    }
+    this.sortSettings = {
+      columns:dataSource.syncGridPredefineFilters.sorted
+    } as SortSettingsModel
   }
 }
 
